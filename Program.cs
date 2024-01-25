@@ -4,55 +4,101 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NganXep
+namespace BaiCay
 {
-    class Stack
+    class TNode
     {
-        private int[] data;
-        private int top;
-        public Stack()
+        public int Info;
+        public TNode Left;
+        public TNode Right;
+
+        public TNode(int x)
         {
-            data = new int[100];
-            top = -1;
+            Info = x;
+            Left = null;
+            Right = null;
         }
-        public Stack(int size)
+    }
+    class SearchBinaryTree
+    {
+        public TNode Root;
+        public SearchBinaryTree()
         {
-            data = new int[size];
-            top = -1;
+            Root = null;
         }
-        public bool isEmpty()
+        //thao tac duyet cay
+        public void NLR(TNode root) //Duyệt theo thứ tự trước
         {
-            bool kq = false;
-            if (top == -1)
-                kq = true;
-            return kq;
-        }
-        public bool isFull()
-        {
-            bool kq = false;
-            if (top == data.Length - 1)
-                kq = true;
-            return kq;
-        }
-        public void Push(int x)
-        {
-            if (isFull())
+            if (root != null)
             {
-                Console.WriteLine("Stack da day. Them that bai.");
+                if (root != null)
+                {
+                    Console.Write($"{root.Info} -> ");
+                    NLR(root.Left);
+                    NLR(root.Right);
+                }
             }
-            else { data[++top] = x; }
         }
-        public int Pop()
+        public void LRN(TNode root) //Duyệt theo thứ tự giữa
         {
-            int kq = 0;
-            if (isEmpty())
+            if (root != null)
             {
-                Console.WriteLine("Stack da day. Them that bai.");
+                if (root != null)
+                {
+                    LRN(root.Left);
+                    Console.Write($"{root.Info} -> ");
+                    LRN(root.Right);
+                }
             }
-            else 
-            { 
-                kq=data[top] ;
-                top--;
+        }
+        public void LNR(TNode root) //Duyệt theo thứ tự sau
+        {
+            if (root != null)
+            {
+                if (root != null)
+                {
+                    LNR(root.Left);
+                    LNR(root.Right);
+                    Console.Write($"{root.Info} -> ");
+                }
+            }
+        }
+        public void ThemNode(ref TNode root, int x)
+        {
+            if (root == null)
+            {
+                TNode p = new TNode(x);
+                root = p;
+            }
+            else if (root.Info > x)
+                ThemNode(ref root.Left, x);
+            else if (root.Info < x)
+                ThemNode(ref root.Right, x);
+        }
+       
+        public void TaoCay()
+        {
+            Console.Write("Cho biet so nut cua cay: ");
+            int n = int.Parse(Console.ReadLine());
+            for (int i = 1; i <= n; i++)
+            {
+                Console.Write("Nhap gia tri node thu" +" "+ i + ": ");
+                int x = int.Parse(Console.ReadLine());
+                ThemNode(ref Root, x);
+            }
+        }
+
+        public TNode TimKiem(TNode root, int x)
+        {
+            TNode kq = null;
+            if (root != null)
+            {
+                if (root.Info == x)
+                    kq = root;
+                else if (x < root.Info)
+                    kq = TimKiem(root.Left, x);
+                else
+                    kq = TimKiem(root.Right, x);
             }
             return kq;
         }
@@ -61,55 +107,31 @@ namespace NganXep
     {
         static void Main(string[] args)
         {
-            int n;
-            Console.Write("Nhap co so he 10: ");
-            n = int.Parse(Console.ReadLine());
-            Console.Write("Nhap co so can doi: ");
+            SearchBinaryTree tree = new SearchBinaryTree();
+            tree.TaoCay();
+            Console.WriteLine("Ket qua duyet cay:");
+            Console.Write("\nNLR:");
+            tree.NLR(tree.Root);
+
+            Console.Write("\nLRN:");
+            tree.LRN(tree.Root);
+
+            Console.Write("\nLNR:");
+            tree.LNR(tree.Root);
+
+            Console.Write("\n Nhap gia tri nut can tim: ");
             int x = int.Parse(Console.ReadLine());
-            Stack s = new Stack();
-            while (n > 0)
+            TNode kq = tree.TimKiem(tree.Root, x);
+            if (kq == null)
             {
-                s.Push(n % x);
-                n = n / x;
+                Console.WriteLine($"{x} khong xuat hien trong cay!");
             }
-            int value;
-            Console.Write($"Bieu dien he so {x}:");
-            while (!s.isEmpty())
+            else
             {
-                if (x == 16)
-                {
-                    value = s.Pop();
-                    switch (value)
-                    {
-                        case 10:
-                            Console.Write("A");
-                            break;
-                        case 11:
-                            Console.Write("B");
-                            break;
-                        case 12:
-                            Console.Write("C");
-                            break;
-                        case 13:
-                            Console.Write("D");
-                            break;
-                        case 14:
-                            Console.Write("E");
-                            break;
-                        case 15:
-                            Console.Write("F");
-                            break;
-                        default:
-                            Console.Write(value);
-                            break;
-                    }
-                }
-                else
-                {
-                    Console.Write(s.Pop());
-                }
+                Console.WriteLine($"{x} xuat hien trong cay!");
             }
             Console.ReadKey();
+
         }
     }
 }
